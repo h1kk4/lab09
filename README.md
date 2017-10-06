@@ -20,7 +20,7 @@ $ open https://travis-ci.org
 - [X] 9. Составить отчет и отправить ссылку личным сообщением в **Slack**
 
 ## Tutorial
-Создание переменных окружения
+Устанавливаем значение переменных окружения
 ```ShellSession
 $ export GITHUB_USERNAME=h1kk4
 $ export GITHUB_TOKEN=xxxxxxxxxxxxxxxxxxxxx
