@@ -1,4 +1,4 @@
-<[![Build Status](https://travis-ci.org/h1kk4/lab05.svg?branch=master)](https://travis-ci.org/h1kk4/lab05)>
+[![Build Status](https://travis-ci.org/h1kk4/lab05.svg?branch=master)](https://travis-ci.org/h1kk4/lab05)
 
 ## Laboratory work III
 
