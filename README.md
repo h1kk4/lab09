@@ -83,14 +83,65 @@ $ git push origin master
 Используем комманды тревиса
 ```ShellSession
 $ travis lint 
+Warnings for .travis.yml:
+[x] value for addons section is empty, dropping
+[x] in addons section: unexpected key apt, dropping
+
 $ travis accounts #выводим все привязанные GitHub аккаунты
+h1kk4 (H1kk4): subscribed, 7 repositories
+
 $ travis sync #синхронизация
+synchronizing: . done
+
 $ travis repos #выводим репозитории и их статусы(связаны ли они с Travis)
+h1kk4/Metods (active: no, admin: yes, push: yes, pull: yes)
+Description: ???
+
+h1kk4/TelegramBot (active: no, admin: yes, push: yes, pull: yes)
+Description: ???
+
+h1kk4/bmstu_labs (active: no, admin: yes, push: yes, pull: yes)
+Description: ???
+
+h1kk4/lab03 (active: no, admin: yes, push: yes, pull: yes)
+Description: ???
+
+h1kk4/lab04 (active: no, admin: yes, push: yes, pull: yes)
+Description: ???
+
+h1kk4/lab05 (active: yes, admin: yes, push: yes, pull: yes)
+Description: ???
+
+h1kk4/piu-piu-SH (active: no, admin: yes, push: yes, pull: yes)
+Description: This is an Old School horisontal scroller 'Shoot Them All' game on bash. With co-op mode. You have to defeat 100 aliens to fight with Boss. To play in co-op mode first, start the server, then start the client. Terminals on both hosts have to be with equal dimensions.
+
 $ travis enable #включаем travis в текущей директории
+h1kk4/lab05: enabled :)
+
 $ travis whatsup #выодоим список выполненых команд
+h1kk4/lab05 passed: #5
+
 $ travis branches #выводим список сделанных шагов на ветке master 
+master:  #5    passed     Update README.md
+
 $ travis history #выводим всю историю изменений и их состояние 
+#5 passed:       master Update README.md
+#4 passed:       master Update README.md
+#3 passed:       master Update README.md
+#2 passed:       master Update README.md
+#1 passed:       master added CI
+
 $ travis show  #выводим всю информацию
+Job #5.1:  Update README.md
+State:         passed
+Type:          push
+Branch:        master
+Compare URL:   https://github.com/h1kk4/lab05/compare/2632fa03838c...f55a75c4f027
+Duration:      30 sec
+Started:       2017-10-06 20:58:28
+Finished:      2017-10-06 20:58:58
+Allow Failure: false
+Config:        os: linux
 ```
 
 ## Report
