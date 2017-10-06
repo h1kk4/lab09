@@ -1,5 +1,5 @@
 <[![Build Status](https://travis-ci.org/h1kk4/lab05.svg?branch=master)](https://travis-ci.org/h1kk4/lab05)>
-<фрагмент_вставки_значка>
+
 ## Laboratory work III
 
 Данная лабораторная работа посвещена изучению систем контроля версий на примере **Git**.
