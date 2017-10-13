@@ -1,154 +1,119 @@
 [![Build Status](https://travis-ci.org/h1kk4/lab06.svg?branch=master)](https://travis-ci.org/h1kk4/lab06)
-## Laboratory work V
+## Laboratory work VI
 
-Данная лабораторная работа посвещена изучению систем непрерывной интеграции на примере сервиса **Travis CI**
+Данная лабораторная работа посвещена изучению фреймворков для тестирования на примере **Catch**
 
 ```ShellSession
-$ open https://travis-ci.org
+$ open https://github.com/philsquared/Catch
 ```
 
 ## Tasks
 
-- [X] 1. Авторизоваться на сервисе **Travis CI** с использованием **GitHub** аккаунта
-- [X] 2. Создать публичный репозиторий с названием **lab06** на сервисе **GitHub**
-- [X] 3. Ознакомиться со ссылками учебного материала
-- [X] 4. Включить интеграцию сервиса **Travis CI** с созданным репозиторием
-- [X] 5. Получить токен для **Travis CLI** с правами **repo** и **user**
-- [X] 6. Получить фрагмент вставки значка сервиса **Travis CI** в формате **Markdown**
-- [X] 7. Установить [**Travis CLI**](https://github.com/travis-ci/travis.rb#installation)
-- [X] 8. Выполнить инструкцию учебного материала
-- [X] 9. Составить отчет и отправить ссылку личным сообщением в **Slack**
+- [ ] 1. Создать публичный репозиторий с названием **lab06** на сервисе **GitHub**
+- [ ] 2. Выполнить инструкцию учебного материала
+- [ ] 3. Ознакомиться со ссылками учебного материала
+- [ ] 4. Составить отчет и отправить ссылку личным сообщением в **Slack**
 
 ## Tutorial
-Устанавливаем значение переменных окружения
+
 ```ShellSession
-$ export GITHUB_USERNAME=h1kk4
-$ export GITHUB_TOKEN=xxxxxxxxxxxxxxxxxxxxx
+$ export GITHUB_USERNAME=<имя_пользователя>
 ```
-Клонируем репозиторий
+
 ```ShellSession
-$ git clone https://github.com/${GITHUB_USERNAME}/lab04 lab06
+$ git clone https://github.com/${GITHUB_USERNAME}/lab05 lab06
 $ cd lab06
 $ git remote remove origin
 $ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
 ```
-Записываем язык программы
-```ShellSession
-$ cat > .travis.yml <<EOF
-language: cpp
-EOF
-```
-Записываем скрипт
-```ShellSession
-$ cat >> .travis.yml <<EOF
 
-script:
-- cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install
-- cmake --build _build
-- cmake --build _build --target install
+```ShellSession
+$ mkdir tests
+$ wget https://github.com/philsquared/Catch/releases/download/v1.9.3/catch.hpp -O tests/catch.hpp
+$ cat > tests/main.cpp <<EOF
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 EOF
 ```
-Записываем аддоны
-```ShellSession
-$ cat >> .travis.yml <<EOF
 
-addons:
-  apt:
-    sources:
-      - george-edison55-precise-backports
-    packages:
-      - cmake
-      - cmake-data
+```ShellSession
+$ sed -i '' '/option(BUILD_EXAMPLES "Build examples" OFF)/a\
+option(BUILD_TESTS "Build tests" OFF)
+' CMakeLists.txt
+$ cat >> CMakeLists.txt <<EOF
+
+if(BUILD_TESTS)
+	enable_testing()
+	file(GLOB \${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
+	add_executable(check \${\${PROJECT_NAME}_TEST_SOURCES})
+	target_link_libraries(check \${PROJECT_NAME} \${DEPENDS_LIBRARIES})
+	add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
+endif()
 EOF
 ```
-Записываем наш токек
+
 ```ShellSession
-$ travis login --github-token ${GITHUB_TOKEN}
+$ cat >> tests/test1.cpp <<EOF
+#include "catch.hpp"
+#include <print.hpp>
+
+TEST_CASE("output values should match input values", "[file]") {
+  std::string text = "hello";
+  std::ofstream out("file.txt");
+  
+  print(text, out);
+  out.close();
+  
+  std::string result;
+  std::ifstream in("file.txt");
+  in >> result;
+  
+  REQUIRE(result == text);
+}
+EOF
 ```
-Проверяем работоспособность
+
+```ShellSession
+$ cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install -DBUILD_TESTS=ON
+$ cmake --build _build
+$ cmake --build _build --target test
+```
+
+```ShellSession
+$ sed -i '' 's/lab05/lab06/g' README.md
+$ sed -i '' 's/\(DCMAKE_INSTALL_PREFIX=_install\)/\1 -DBUILD_TESTS=ON/' .travis.yml
+$ sed -i '' '/cmake --build _build --target install/a\
+- cmake --build _build --target test
+' .travis.yml
+```
+
 ```ShellSession
 $ travis lint
 ```
-Вставка значка в файл отчета
+
 ```ShellSession
-$ ex -sc '1i|<фрагмент_вставки_значка>' -cx README.md
-```
-Делаем коммит
-```ShellSession
-$ git add .travis.yml
-$ git add README.md
-$ git commit -m"added CI"
+$ git add .
+$ git commit -m"added tests"
 $ git push origin master
 ```
-Используем комманды тревиса
+
 ```ShellSession
-$ travis lint 
-Warnings for .travis.yml:
-[x] value for addons section is empty, dropping
-[x] in addons section: unexpected key apt, dropping
+$ travis login --auto
+$ travis enable
+```
 
-$ travis accounts #выводим все привязанные GitHub аккаунты
-h1kk4 (H1kk4): subscribed, 7 repositories
-
-$ travis sync #синхронизация
-synchronizing: . done
-
-$ travis repos #выводим репозитории и их статусы(связаны ли они с Travis)
-h1kk4/Metods (active: no, admin: yes, push: yes, pull: yes)
-Description: ???
-
-h1kk4/TelegramBot (active: no, admin: yes, push: yes, pull: yes)
-Description: ???
-
-h1kk4/bmstu_labs (active: no, admin: yes, push: yes, pull: yes)
-Description: ???
-
-h1kk4/lab03 (active: no, admin: yes, push: yes, pull: yes)
-Description: ???
-
-h1kk4/lab04 (active: no, admin: yes, push: yes, pull: yes)
-Description: ???
-
-h1kk4/lab06 (active: yes, admin: yes, push: yes, pull: yes)
-Description: ???
-
-h1kk4/piu-piu-SH (active: no, admin: yes, push: yes, pull: yes)
-Description: This is an Old School horisontal scroller 'Shoot Them All' game on bash. With co-op mode. You have to defeat 100 aliens to fight with Boss. To play in co-op mode first, start the server, then start the client. Terminals on both hosts have to be with equal dimensions.
-
-$ travis enable #включаем travis в текущей директории
-h1kk4/lab06: enabled :)
-
-$ travis whatsup #выодоим список выполненых команд
-h1kk4/lab06 passed: #5
-
-$ travis branches #выводим список сделанных шагов на ветке master 
-master:  #5    passed     Update README.md
-
-$ travis history #выводим всю историю изменений и их состояние 
-#5 passed:       master Update README.md
-#4 passed:       master Update README.md
-#3 passed:       master Update README.md
-#2 passed:       master Update README.md
-#1 passed:       master added CI
-
-$ travis show  #выводим всю информацию
-Job #5.1:  Update README.md
-State:         passed
-Type:          push
-Branch:        master
-Compare URL:   https://github.com/h1kk4/lab06/compare/2632fa03838c...f55a75c4f027
-Duration:      30 sec
-Started:       2017-10-06 20:58:28
-Finished:      2017-10-06 20:58:58
-Allow Failure: false
-Config:        os: linux
+```ShellSession
+$ mkdir artifacts
+$ screencapture -T 20 artifacts/screenshot.jpg
+<Command>-T
+$ open https://github.com/${GITHUB_USERNAME}/lab06
 ```
 
 ## Report
 
 ```ShellSession
 $ cd ~/workspace/labs/
-$ export LAB_NUMBER=05
+$ export LAB_NUMBER=06
 $ git clone https://github.com/tp-labs/lab${LAB_NUMBER} tasks/lab${LAB_NUMBER}
 $ mkdir reports/lab${LAB_NUMBER}
 $ cp tasks/lab${LAB_NUMBER}/README.md reports/lab${LAB_NUMBER}/REPORT.md
@@ -159,9 +124,8 @@ $ gistup -m "lab${LAB_NUMBER}"
 
 ## Links
 
-- [Travis Client](https://github.com/travis-ci/travis.rb)
-- [AppVeyour](https://www.appveyor.com/)
-- [GitLab CI](https://about.gitlab.com/gitlab-ci/)
+- [Boost.Tests](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/)
+- [Google Test](https://github.com/google/googletest)
 
 ```
 Copyright (c) 2017 Братья Вершинины
