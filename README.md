@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/h1kk4/lab05.svg?branch=master)](https://travis-ci.org/h1kk4/lab05)
+[![Build Status](https://travis-ci.org/h1kk4/lab06.svg?branch=master)](https://travis-ci.org/h1kk4/lab06)
 ## Laboratory work V
 
 Данная лабораторная работа посвещена изучению систем непрерывной интеграции на примере сервиса **Travis CI**
@@ -10,7 +10,7 @@ $ open https://travis-ci.org
 ## Tasks
 
 - [X] 1. Авторизоваться на сервисе **Travis CI** с использованием **GitHub** аккаунта
-- [X] 2. Создать публичный репозиторий с названием **lab05** на сервисе **GitHub**
+- [X] 2. Создать публичный репозиторий с названием **lab06** на сервисе **GitHub**
 - [X] 3. Ознакомиться со ссылками учебного материала
 - [X] 4. Включить интеграцию сервиса **Travis CI** с созданным репозиторием
 - [X] 5. Получить токен для **Travis CLI** с правами **repo** и **user**
@@ -27,10 +27,10 @@ $ export GITHUB_TOKEN=xxxxxxxxxxxxxxxxxxxxx
 ```
 Клонируем репозиторий
 ```ShellSession
-$ git clone https://github.com/${GITHUB_USERNAME}/lab04 lab05
-$ cd lab05
+$ git clone https://github.com/${GITHUB_USERNAME}/lab04 lab06
+$ cd lab06
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab05
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
 ```
 Записываем язык программы
 ```ShellSession
@@ -109,17 +109,17 @@ Description: ???
 h1kk4/lab04 (active: no, admin: yes, push: yes, pull: yes)
 Description: ???
 
-h1kk4/lab05 (active: yes, admin: yes, push: yes, pull: yes)
+h1kk4/lab06 (active: yes, admin: yes, push: yes, pull: yes)
 Description: ???
 
 h1kk4/piu-piu-SH (active: no, admin: yes, push: yes, pull: yes)
 Description: This is an Old School horisontal scroller 'Shoot Them All' game on bash. With co-op mode. You have to defeat 100 aliens to fight with Boss. To play in co-op mode first, start the server, then start the client. Terminals on both hosts have to be with equal dimensions.
 
 $ travis enable #включаем travis в текущей директории
-h1kk4/lab05: enabled :)
+h1kk4/lab06: enabled :)
 
 $ travis whatsup #выодоим список выполненых команд
-h1kk4/lab05 passed: #5
+h1kk4/lab06 passed: #5
 
 $ travis branches #выводим список сделанных шагов на ветке master 
 master:  #5    passed     Update README.md
@@ -136,7 +136,7 @@ Job #5.1:  Update README.md
 State:         passed
 Type:          push
 Branch:        master
-Compare URL:   https://github.com/h1kk4/lab05/compare/2632fa03838c...f55a75c4f027
+Compare URL:   https://github.com/h1kk4/lab06/compare/2632fa03838c...f55a75c4f027
 Duration:      30 sec
 Started:       2017-10-06 20:58:28
 Finished:      2017-10-06 20:58:58
