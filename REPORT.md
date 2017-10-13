@@ -16,7 +16,7 @@ $ open https://github.com/philsquared/Catch
 ## Tutorial
 Устанавливаем значение переменных окружения
 ```ShellSession
-$ export GITHUB_USERNAME=<имя_пользователя>
+$ export GITHUB_USERNAME=h1kk4
 ```
 Клонируем репозиторий
 ```ShellSession
