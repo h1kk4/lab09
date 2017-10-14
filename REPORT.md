@@ -27,10 +27,12 @@ $ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
 ```
 Загружаем необходимые файлы
 ```ShellSession
-$ mkdir tests #создаем папку tests
-$ wget https://github.com/philsquared/Catch/releases/download/v1.9.3/catch.hpp -O tests/catch.hpp # скачиваем "catch.hpp" в директроию /tests
+$ mkdir tests 
+#создаем папку tests
+$ wget https://github.com/philsquared/Catch/releases/download/v1.9.3/catch.hpp -O tests/catch.hpp 
+# скачиваем "catch.hpp" в директроию /tests
 $ cat > tests/main.cpp <<EOF #редактируем файла main.cpp
-#define CATCH_CONFIG_MAIN #при компиляции структура будет преобразована в функцию main
+#define CATCH_CONFIG_MAIN #при компиляции будет преобразована в функцию main
 #include "catch.hpp" 
 EOF
 ```
@@ -46,7 +48,8 @@ if(BUILD_TESTS)
 	file(GLOB \${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
 	add_executable(check \${\${PROJECT_NAME}_TEST_SOURCES})
 	target_link_libraries(check \${PROJECT_NAME} \${DEPENDS_LIBRARIES})
-	add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") #добавляем имя теста и указываем команду, необходимую для его запуска 
+	#добавляем имя теста и указываем команду, необходимую для его запуска 
+	add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
 endif()
 EOF
 ```
@@ -75,7 +78,9 @@ EOF
 ```ShellSession
 $ cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install -DBUILD_TESTS=ON
 $ cmake --build _build
-$ cmake --build _build --target test  #после сборки запускает test если он задан 
+$ cmake --build _build --target test  
+#после сборки запускает test, которая представляет собой запуск исполняемых файлов,одним из которых является исполняемый файл *check*
+
 ```
 Редкатирование файлов с помощью sed
 ```ShellSession
