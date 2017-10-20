@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/h1kk4/lab06.svg?branch=master)](https://travis-ci.org/h1kk4/lab06)
+[![Build Status](https://travis-ci.org/h1kk4/lab07.svg?branch=master)](https://travis-ci.org/h1kk4/lab07)
 ## Laboratory work VI
 
 Данная лабораторная работа посвещена изучению фреймворков для тестирования на примере **Catch**
@@ -9,7 +9,7 @@ $ open https://github.com/philsquared/Catch
 
 ## Tasks
 
-- [ ] 1. Создать публичный репозиторий с названием **lab06** на сервисе **GitHub**
+- [ ] 1. Создать публичный репозиторий с названием **lab07** на сервисе **GitHub**
 - [ ] 2. Выполнить инструкцию учебного материала
 - [ ] 3. Ознакомиться со ссылками учебного материала
 - [ ] 4. Составить отчет и отправить ссылку личным сообщением в **Slack**
@@ -21,10 +21,10 @@ $ export GITHUB_USERNAME=<имя_пользователя>
 ```
 
 ```ShellSession
-$ git clone https://github.com/${GITHUB_USERNAME}/lab05 lab06
-$ cd lab06
+$ git clone https://github.com/${GITHUB_USERNAME}/lab05 lab07
+$ cd lab07
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab07
 ```
 
 ```ShellSession
@@ -80,7 +80,7 @@ $ cmake --build _build --target test
 ```
 
 ```ShellSession
-$ sed -i '' 's/lab05/lab06/g' README.md
+$ sed -i '' 's/lab05/lab07/g' README.md
 $ sed -i '' 's/\(DCMAKE_INSTALL_PREFIX=_install\)/\1 -DBUILD_TESTS=ON/' .travis.yml
 $ sed -i '' '/cmake --build _build --target install/a\
 - cmake --build _build --target test
@@ -106,7 +106,7 @@ $ travis enable
 $ mkdir artifacts
 $ screencapture -T 20 artifacts/screenshot.jpg
 <Command>-T
-$ open https://github.com/${GITHUB_USERNAME}/lab06
+$ open https://github.com/${GITHUB_USERNAME}/lab07
 ```
 
 ## Report
