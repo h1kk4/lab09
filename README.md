@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/h1kk4/lab07.svg?branch=master)](https://travis-ci.org/h1kk4/lab07)
+[![Build Status](https://travis-ci.org/h1kk4/lab08.svg?branch=master)](https://travis-ci.org/h1kk4/lab08)
 ## Laboratory work VII
 
 Данная лабораторная работа посвещена изучению систем документирования исходного кода на примере **Doxygen**
@@ -9,7 +9,7 @@ $ open https://www.stack.nl/~dimitri/doxygen/manual/index.html
 
 ## Tasks
 
-- [X] 1. Создать публичный репозиторий с названием **lab07** на сервисе **GitHub**
+- [X] 1. Создать публичный репозиторий с названием **lab08** на сервисе **GitHub**
 - [X] 2. Выполнить инструкцию учебного материала
 - [X] 3. Ознакомиться со ссылками учебного материала
 - [X] 4. Составить отчет и отправить ссылку личным сообщением в **Slack**
@@ -23,10 +23,10 @@ $ alias gsed=sed # for *-nix system
 ```
 Копируем репозиторий из прошлой лабы
 ```ShellSession
-$ git clone https://github.com/${GITHUB_USERNAME}/lab06 lab07
-$ cd lab07
+$ git clone https://github.com/${GITHUB_USERNAME}/lab06 lab08
+$ cd lab08
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab07
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab08
 ```
 Создаем документацию
 ```ShellSession
@@ -45,7 +45,7 @@ $ gsed -i 's/\(OUTPUT_DIRECTORY.*=\).*$/\1 docs/g' docs/doxygen.conf
 ```
 
 ```ShellSession
-$ gsed -i 's/lab06/lab07/g' README.md
+$ gsed -i 's/lab06/lab08/g' README.md
 ```
 
 ```ShellSession
@@ -79,7 +79,7 @@ $ git checkout master
 $ mkdir artifacts && cd artifacts  #создание директории и переход в нее
 $ screencapture -T 10 screenshot.jpg # или png #делаем скриншот
 <Command>-T
-$ open https://${GITHUB_USERNAME}.github.io/lab07/print_8hpp.html
+$ open https://${GITHUB_USERNAME}.github.io/lab08/print_8hpp.html
 $ gdrive upload screenshot.jpg # или png #загрузка скриншота в Google Drive
 $ SCREENSHOT_ID=`gdrive list | grep screenshot | awk '{ print $1; }'`
 $ gdrive share ${SCREENSHOT_ID} --role reader --type user --email rusdevops@gmail.com   #Разрешить доступ
