@@ -1,10 +1,9 @@
-[![Build Status](https://travis-ci.org/h1kk4/lab08.svg?branch=master)](https://travis-ci.org/h1kk4/lab08)
-## Laboratory work VII
+## Laboratory work VIII
 
-Данная лабораторная работа посвещена изучению систем документирования исходного кода на примере **Doxygen**
+Данная лабораторная работа посвещена изучению средств пакетирования на примере **CPack**
 
 ```ShellSession
-$ open https://www.stack.nl/~dimitri/doxygen/manual/index.html
+$ open https://cmake.org/Wiki/CMake:CPackPackageGenerators
 ```
 
 ## Tasks
@@ -17,45 +16,127 @@ $ open https://www.stack.nl/~dimitri/doxygen/manual/index.html
 ## Tutorial
 Задаем переменные окружения
 ```ShellSession
-$ export GITHUB_USERNAME=h1kk4
-$ alias edit=nano
+$ export GITHUB_USERNAME=<имя_пользователя>
+$ export GITHUB_EMAIL=<адрес_почтового_ящика>
+$ alias edit=<nano|vi|vim|subl>
 $ alias gsed=sed # for *-nix system
 ```
-Копируем репозиторий из прошлой лабы
+
 ```ShellSession
-$ git clone https://github.com/${GITHUB_USERNAME}/lab06 lab08
-$ cd lab08
+$ cd ${GITHUB_USERNAME}/workspace
+$ pushd .
+$ source scripts/activate
+```
+Копирование репозитория 7 лабораторной 
+```ShellSession
+$ git clone https://github.com/${GITHUB_USERNAME}/lab07 projects/lab08
+$ cd projects/lab08
 $ git remote remove origin
 $ git remote add origin https://github.com/${GITHUB_USERNAME}/lab08
 ```
-Создаем документацию
+Редактирование CMakeLists.txt, устанавливая новые версии MAJOR, TWEAK, PATCH, MINOR
 ```ShellSession
-$ mkdir docs
-$ doxygen -g docs/doxygen.conf
-$ cat docs/doxygen.conf
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_STRING "v${PRINT_VERSION}")
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION \
+\${PRINT_VERSION_MAJOR}.\${PRINT_VERSION_MINOR}.\${PRINT_VERSION_PATCH}.\${PRINT_VERSION_TWEAK})
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_TWEAK 0)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_PATCH 0)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_MINOR 1)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_MAJOR 0)
+' CMakeLists.txt
 ```
-Редактируем conf-файл с помощью sed
+Создание файлов DESCRIPTION и ChangeLog.md
 ```ShellSession
-$ gsed -i 's/\(PROJECT_NAME.*=\).*$/\1 print/g' docs/doxygen.conf
-$ gsed -i 's/\(EXAMPLE_PATH.*=\).*$/\1 examples/g' docs/doxygen.conf
-$ gsed -i 's/\(INCLUDE_PATH.*=\).*$/\1 examples/g' docs/doxygen.conf
-$ gsed -i 's/\(INPUT *=\).*$/\1 README.md include/g' docs/doxygen.conf
-$ gsed -i 's/\(USE_MDFILE_AS_MAINPAGE.*=\).*$/\1 README.md/g' docs/doxygen.conf
-$ gsed -i 's/\(OUTPUT_DIRECTORY.*=\).*$/\1 docs/g' docs/doxygen.conf
+$ touch DESCRIPTION && edit DESCRIPTION #создание и редактирование файла DESCRIPTION
+$ touch ChangeLog.md #создание файла ChangeLog
+$ export DATE="`LANG=en_US date +'%a %b %d %Y'`" #добавление даты, юзернейма и электронной почты
+$ cat > ChangeLog.md <<EOF
+* ${DATE} ${GITHUB_USERNAME} <${GITHUB_EMAIL}> 0.1.0.0
+- Initial RPM release
+EOF
+```
+Редактирование файла CPackConfig.cmake
+```ShellSession
+$ cat > CPackConfig.cmake <<EOF
+include(InstallRequiredSystemLibraries)
+EOF
+```
+Устанавливаем значения 
+```ShellSession
+$ cat >> CPackConfig.cmake <<EOF
+set(CPACK_PACKAGE_CONTACT ${GITHUB_EMAIL})  #электронная почта
+set(CPACK_PACKAGE_VERSION_MAJOR \${PRINT_VERSION_MAJOR}) #версия MAJOR
+set(CPACK_PACKAGE_VERSION_MINOR \${PRINT_VERSION_MINOR}) #версия MINOR
+set(CPACK_PACKAGE_VERSION_PATCH \${PRINT_VERSION_PATCH}) #версия PATCH
+set(CPACK_PACKAGE_VERSION_TWEAK \${PRINT_VERSION_TWEAK}) #версия TWEAK
+set(CPACK_PACKAGE_VERSION \${PRINT_VERSION}) #версия печати на экран
+set(CPACK_PACKAGE_DESCRIPTION_FILE \${CMAKE_CURRENT_SOURCE_DIR}/DESCRIPTION)  #путь к файлу DESCRIPTION
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "static c++ library for printing") #комментарий
+EOF
+```
+Задаем пути к файлам
+```ShellSession
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_RESOURCE_FILE_LICENSE \${CMAKE_CURRENT_SOURCE_DIR}/LICENSE)
+set(CPACK_RESOURCE_FILE_README \${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+EOF
+```
+Задаем параметры
+```ShellSession
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_RPM_PACKAGE_NAME "print-devel") #имя пакета "print-devel"
+set(CPACK_RPM_PACKAGE_LICENSE "MIT") #лицензия MIT
+set(CPACK_RPM_PACKAGE_GROUP "print") #группа print
+set(CPACK_RPM_PACKAGE_URL "https://github.com/${GITHUB_USERNAME}/lab07") #страница doxygen
+set(CPACK_RPM_CHANGELOG_FILE \${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog.md) #путь к лог
+set(CPACK_RPM_PACKAGE_RELEASE 1) #релиз истина 
+EOF
 ```
 
 ```ShellSession
-$ gsed -i 's/lab06/lab08/g' README.md
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_DEBIAN_PACKAGE_NAME "libprint-dev") #имя пакета"libprint-dev"
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://${GITHUB_USERNAME}.github.io/lab07") #домашняя страница doxygen
+set(CPACK_DEBIAN_PACKAGE_PREDEPENDS "cmake >= 3.0") #версия cmake 3.0 и новее
+set(CPACK_DEBIAN_PACKAGE_RELEASE 1) #релиз Debian истина
+EOF
+```
+Подключаем cpack
+```ShellSession
+$ cat >> CPackConfig.cmake <<EOF
+
+include(CPack)
+EOF
+```
+Подключаем CPackConfig.cmake
+```ShellSession
+$ cat >> CMakeLists.txt <<EOF
+
+include(CPackConfig.cmake)
+EOF
 ```
 
 ```ShellSession
-# документируем функции print 
-$ edit include/print.hpp
+$ gsed -i 's/lab07/lab08/g' README.md
 ```
 Коммитим и пушим изменения в репозиторий
 ```ShellSession
 $ git add .
-$ git commit -m"added doxygen.conf"
+$ git commit -m"added cpack config"
 $ git push origin master
 ```
 Активируем этот проект в Travis
@@ -63,35 +144,37 @@ $ git push origin master
 $ travis login --auto
 $ travis enable
 ```
-Работаем с файлами в Doxygen
+
 ```ShellSession
-$ doxygen docs/doxygen.conf #Удаляем все файлы которые не содержат "docs"
-$ ls | grep "[^docs]" | xargs rm -rf #Перемещаем директории docs/html в текущую и удаляем директории docs 
-$ mv docs/html/* . && rm -rf docs #Создаем новую ветку и пушим в неё
-$ git checkout -b gh-pages
-$ git add .
-$ git commit -m"added documentation"
-$ git push origin gh-pages
-$ git checkout master
+$ cmake -H. -B_build #сканирование CMakeLists.txt
+$ cmake --build _build #создание build
+$ cd _build
+$ cpack -G "TGZ"
+$ cpack -G "RPM"
+$ cpack -G "DEB"
+$ cpack -G "NSIS"
+$ cpack -G "DragNDrop"
+$ cd ..
 ```
 
 ```ShellSession
-$ mkdir artifacts && cd artifacts  #создание директории и переход в нее
-$ screencapture -T 10 screenshot.jpg # или png #делаем скриншот
-<Command>-T
-$ open https://${GITHUB_USERNAME}.github.io/lab08/print_8hpp.html
-$ gdrive upload screenshot.jpg # или png #загрузка скриншота в Google Drive
-$ SCREENSHOT_ID=`gdrive list | grep screenshot | awk '{ print $1; }'`
-$ gdrive share ${SCREENSHOT_ID} --role reader --type user --email rusdevops@gmail.com   #Разрешить доступ
-$ echo https://drive.google.com/open?id=${SCREENSHOT_ID} #Вывод ссылки на скриншот
-    https://drive.google.com/open?id=0B1ftqtWqkDq2R2lxbjc1dWprR2M
+$ cmake -H. -B_build -DCPACK_GENERATOR="TGZ"  #задаем архивирование - TGZ
+$ cmake --build _build --target package #архивирование
+```
+Создаем директорию Artifacts и перемещаем в неё архивированный файл
+```ShellSession
+$ mkdir artifacts
+$ mv _build/*.tar.gz artifacts
+$ tree artifacts
+artifacts
+└── print-0.1.0.0-Darwin.tar.gz
 ```
 
 ## Report
 
 ```ShellSession
-$ cd ~/workspace/labs/
-$ export LAB_NUMBER=07
+$ popd
+$ export LAB_NUMBER=08
 $ git clone https://github.com/tp-labs/lab${LAB_NUMBER} tasks/lab${LAB_NUMBER}
 $ mkdir reports/lab${LAB_NUMBER}
 $ cp tasks/lab${LAB_NUMBER}/README.md reports/lab${LAB_NUMBER}/REPORT.md
@@ -102,11 +185,10 @@ $ gistup -m "lab${LAB_NUMBER}"
 
 ## Links
 
-- [HTML](https://ru.wikipedia.org/wiki/HTML)
-- [LAΤΕΧ](https://ru.wikipedia.org/wiki/LaTeX)
-- [man](https://ru.wikipedia.org/wiki/Man_(%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%B0_Unix))
-- [CHM](https://ru.wikipedia.org/wiki/HTMLHelp)
-- [PostScript](https://ru.wikipedia.org/wiki/PostScript)
+- [DMG](https://cmake.org/cmake/help/latest/module/CPackDMG.html)
+- [DEB](https://cmake.org/cmake/help/latest/module/CPackDeb.html)
+- [RPM](https://cmake.org/cmake/help/latest/module/CPackRPM.html)
+- [NSIS](https://cmake.org/cmake/help/latest/module/CPackNSIS.html)
 
 ```
 Copyright (c) 2017 Братья Вершинины
