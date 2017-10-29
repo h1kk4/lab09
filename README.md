@@ -144,10 +144,10 @@ $ git push origin master
 $ travis login --auto
 $ travis enable
 ```
-
+Сборка проекта
 ```ShellSession
-$ cmake -H. -B_build #сканирование CMakeLists.txt
-$ cmake --build _build #создание build
+$ cmake -H. -B_build 
+$ cmake --build _build 
 $ cd _build
 $ cpack -G "TGZ"
 $ cpack -G "RPM"
@@ -156,12 +156,12 @@ $ cpack -G "NSIS"
 $ cpack -G "DragNDrop"
 $ cd ..
 ```
-
+Архивируем проект
 ```ShellSession
 $ cmake -H. -B_build -DCPACK_GENERATOR="TGZ"  #задаем архивирование - TGZ
 $ cmake --build _build --target package #архивирование
 ```
-Создаем директорию Artifacts и перемещаем в неё архивированный файл
+Создаем директорию artifacts и перемещаем в неё архивированный файл
 ```ShellSession
 $ mkdir artifacts
 $ mv _build/*.tar.gz artifacts
