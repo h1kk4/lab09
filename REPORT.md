@@ -1,123 +1,180 @@
-## Laboratory work VI
+## Laboratory work VIII
 
-Данная лабораторная работа посвещена изучению фреймворков для тестирования на примере **Catch**
+Данная лабораторная работа посвещена изучению средств пакетирования на примере **CPack**
 
 ```ShellSession
-$ open https://github.com/philsquared/Catch
+$ open https://cmake.org/Wiki/CMake:CPackPackageGenerators
 ```
 
 ## Tasks
 
-- [X] 1. Создать публичный репозиторий с названием **lab06** на сервисе **GitHub**
+- [X] 1. Создать публичный репозиторий с названием **lab08** на сервисе **GitHub**
 - [X] 2. Выполнить инструкцию учебного материала
 - [X] 3. Ознакомиться со ссылками учебного материала
 - [X] 4. Составить отчет и отправить ссылку личным сообщением в **Slack**
 
 ## Tutorial
-Устанавливаем значение переменных окружения
+Задаем переменные окружения
 ```ShellSession
-$ export GITHUB_USERNAME=h1kk4
+$ export GITHUB_USERNAME=<имя_пользователя>
+$ export GITHUB_EMAIL=<адрес_почтового_ящика>
+$ alias edit=<nano|vi|vim|subl>
+$ alias gsed=sed # for *-nix system
 ```
-Клонируем репозиторий
+
 ```ShellSession
-$ git clone https://github.com/${GITHUB_USERNAME}/lab05 lab06
-$ cd lab06
+$ cd ${GITHUB_USERNAME}/workspace
+$ pushd .
+$ source scripts/activate
+```
+Копирование репозитория 7 лабораторной 
+```ShellSession
+$ git clone https://github.com/${GITHUB_USERNAME}/lab07 projects/lab08
+$ cd projects/lab08
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab08
 ```
-Загружаем необходимые файлы
+Редактирование CMakeLists.txt, устанавливая новые версии MAJOR, TWEAK, PATCH, MINOR
 ```ShellSession
-$ mkdir tests 
-#создаем папку tests
-$ wget https://github.com/philsquared/Catch/releases/download/v1.9.3/catch.hpp -O tests/catch.hpp 
-# скачиваем "catch.hpp" в директроию /tests
-$ cat > tests/main.cpp <<EOF #редактируем файла main.cpp
-#define CATCH_CONFIG_MAIN #при компиляции будет преобразована в функцию main
-#include "catch.hpp" 
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_STRING "v${PRINT_VERSION}")
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION \
+\${PRINT_VERSION_MAJOR}.\${PRINT_VERSION_MINOR}.\${PRINT_VERSION_PATCH}.\${PRINT_VERSION_TWEAK})
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_TWEAK 0)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_PATCH 0)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_MINOR 1)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_MAJOR 0)
+' CMakeLists.txt
+```
+Создание файлов DESCRIPTION и ChangeLog.md
+```ShellSession
+$ touch DESCRIPTION && edit DESCRIPTION #создание и редактирование файла DESCRIPTION
+$ touch ChangeLog.md #создание файла ChangeLog
+$ export DATE="`LANG=en_US date +'%a %b %d %Y'`" #добавление даты, юзернейма и электронной почты
+$ cat > ChangeLog.md <<EOF
+* ${DATE} ${GITHUB_USERNAME} <${GITHUB_EMAIL}> 0.1.0.0
+- Initial RPM release
 EOF
 ```
-Создаем тесты
+Редактирование файла CPackConfig.cmake
 ```ShellSession
-$ sed -i '' '/option(BUILD_EXAMPLES "Build examples" OFF)/a\ #выделение определенной строки
-option(BUILD_TESTS "Build tests" OFF)   #вставка следующей строки после выделенной
-' CMakeLists.txt # указываем файл, куда будем вставлять 
-$ cat >> CMakeLists.txt <<EOF #редаектируем CMakeList
-
-if(BUILD_TESTS)
-	enable_testing()
-	file(GLOB \${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
-	add_executable(check \${\${PROJECT_NAME}_TEST_SOURCES})
-	target_link_libraries(check \${PROJECT_NAME} \${DEPENDS_LIBRARIES})
-	#добавляем имя теста и указываем команду, необходимую для его запуска 
-	add_test(NAME check COMMAND check "-s" "-r" "compact" "--use-colour" "yes") 
-endif()
+$ cat > CPackConfig.cmake <<EOF
+include(InstallRequiredSystemLibraries)
 EOF
 ```
-Написание теста test1.cpp
+Устанавливаем значения 
 ```ShellSession
-$ cat >> tests/test1.cpp <<EOF
-#include "catch.hpp"
-#include <print.hpp>
-
-TEST_CASE("output values should match input values", "[file]") {
-  std::string text = "hello";
-  std::ofstream out("file.txt");
-  
-  print(text, out);
-  out.close();
-  
-  std::string result;
-  std::ifstream in("file.txt");
-  in >> result;
-  
-  REQUIRE(result == text);
-}
+$ cat >> CPackConfig.cmake <<EOF
+set(CPACK_PACKAGE_CONTACT ${GITHUB_EMAIL})  #электронная почта
+set(CPACK_PACKAGE_VERSION_MAJOR \${PRINT_VERSION_MAJOR}) #версия MAJOR
+set(CPACK_PACKAGE_VERSION_MINOR \${PRINT_VERSION_MINOR}) #версия MINOR
+set(CPACK_PACKAGE_VERSION_PATCH \${PRINT_VERSION_PATCH}) #версия PATCH
+set(CPACK_PACKAGE_VERSION_TWEAK \${PRINT_VERSION_TWEAK}) #версия TWEAK
+set(CPACK_PACKAGE_VERSION \${PRINT_VERSION}) #версия печати на экран
+set(CPACK_PACKAGE_DESCRIPTION_FILE \${CMAKE_CURRENT_SOURCE_DIR}/DESCRIPTION)  #путь к файлу DESCRIPTION
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "static c++ library for printing") #комментарий
 EOF
 ```
-Запуск тестов с помощью cmake
+Задаем пути к файлам
 ```ShellSession
-$ cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install -DBUILD_TESTS=ON
-$ cmake --build _build
-$ cmake --build _build --target test  
-#после сборки запускает test, которая представляет собой запуск исполняемых файлов,одним из которых является исполняемый файл *check*
+$ cat >> CPackConfig.cmake <<EOF
 
+set(CPACK_RESOURCE_FILE_LICENSE \${CMAKE_CURRENT_SOURCE_DIR}/LICENSE)
+set(CPACK_RESOURCE_FILE_README \${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+EOF
 ```
-Редкатирование файлов с помощью sed
+Задаем параметры
 ```ShellSession
-$ sed -i '' 's/lab05/lab06/g' README.md   #заменяем lab05 на lab06 в README.md
-$ sed -i '' 's/\(DCMAKE_INSTALL_PREFIX=_install\)/\1 -DBUILD_TESTS=ON/' .travis.yml #заменяем строки в .travis.yml
-$ sed -i '' '/cmake --build _build --target install/a\ #добавляем следующие строки
-- cmake --build _build --target test
-' .travis.yml
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_RPM_PACKAGE_NAME "print-devel") #имя пакета "print-devel"
+set(CPACK_RPM_PACKAGE_LICENSE "MIT") #лицензия MIT
+set(CPACK_RPM_PACKAGE_GROUP "print") #группа print
+set(CPACK_RPM_PACKAGE_URL "https://github.com/${GITHUB_USERNAME}/lab07") #страница doxygen
+set(CPACK_RPM_CHANGELOG_FILE \${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog.md) #путь к лог
+set(CPACK_RPM_PACKAGE_RELEASE 1) #релиз истина 
+EOF
 ```
 
 ```ShellSession
-$ travis lint #проверка .travis.yml
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_DEBIAN_PACKAGE_NAME "libprint-dev") #имя пакета"libprint-dev"
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://${GITHUB_USERNAME}.github.io/lab07") #домашняя страница doxygen
+set(CPACK_DEBIAN_PACKAGE_PREDEPENDS "cmake >= 3.0") #версия cmake 3.0 и новее
+set(CPACK_DEBIAN_PACKAGE_RELEASE 1) #релиз Debian истина
+EOF
 ```
-Пушим изменения
+Подключаем cpack
+```ShellSession
+$ cat >> CPackConfig.cmake <<EOF
+
+include(CPack)
+EOF
+```
+Подключаем CPackConfig.cmake
+```ShellSession
+$ cat >> CMakeLists.txt <<EOF
+
+include(CPackConfig.cmake)
+EOF
+```
+
+```ShellSession
+$ gsed -i 's/lab07/lab08/g' README.md
+```
+Коммитим и пушим изменения в репозиторий
 ```ShellSession
 $ git add .
-$ git commit -m"added tests"
+$ git commit -m"added cpack config"
 $ git push origin master
 ```
-Авторизация и подключение travis к репозиторию lab06
+Активируем этот проект в Travis
 ```ShellSession
 $ travis login --auto
 $ travis enable
 ```
-Делаем скриншот и сохраняем в artifacts
+
+```ShellSession
+$ cmake -H. -B_build #сканирование CMakeLists.txt
+$ cmake --build _build #создание build
+$ cd _build
+$ cpack -G "TGZ"
+$ cpack -G "RPM"
+$ cpack -G "DEB"
+$ cpack -G "NSIS"
+$ cpack -G "DragNDrop"
+$ cd ..
+```
+
+```ShellSession
+$ cmake -H. -B_build -DCPACK_GENERATOR="TGZ"  #задаем архивирование - TGZ
+$ cmake --build _build --target package #архивирование
+```
+Создаем директорию Artifacts и перемещаем в неё архивированный файл
 ```ShellSession
 $ mkdir artifacts
-$ screencapture -T 20 artifacts/screenshot.jpg
-<Command>-T
-$ open https://github.com/${GITHUB_USERNAME}/lab06
+$ mv _build/*.tar.gz artifacts
+$ tree artifacts
+artifacts
+└── print-0.1.0.0-Darwin.tar.gz
 ```
 
 ## Report
 
 ```ShellSession
-$ cd ~/workspace/labs/
-$ export LAB_NUMBER=06
+$ popd
+$ export LAB_NUMBER=08
 $ git clone https://github.com/tp-labs/lab${LAB_NUMBER} tasks/lab${LAB_NUMBER}
 $ mkdir reports/lab${LAB_NUMBER}
 $ cp tasks/lab${LAB_NUMBER}/README.md reports/lab${LAB_NUMBER}/REPORT.md
@@ -128,8 +185,10 @@ $ gistup -m "lab${LAB_NUMBER}"
 
 ## Links
 
-- [Boost.Tests](http://www.boost.org/doc/libs/1_63_0/libs/test/doc/html/)
-- [Google Test](https://github.com/google/googletest)
+- [DMG](https://cmake.org/cmake/help/latest/module/CPackDMG.html)
+- [DEB](https://cmake.org/cmake/help/latest/module/CPackDeb.html)
+- [RPM](https://cmake.org/cmake/help/latest/module/CPackRPM.html)
+- [NSIS](https://cmake.org/cmake/help/latest/module/CPackNSIS.html)
 
 ```
 Copyright (c) 2017 Братья Вершинины
